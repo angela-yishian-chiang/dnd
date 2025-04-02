@@ -15,6 +15,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 // Logging all requests
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.url}`);
@@ -27,10 +31,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/ping", (req, res) => {
-  res.send("pong");
-});
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
