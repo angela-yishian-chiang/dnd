@@ -10,7 +10,7 @@ function submitAction() {
 
   console.log("Sending action:", action);
 
-  fetch("https://reimagined-goldfish-v6wrqjwwwvwphpxj9-3000.app.github.dev/", {
+  fetch("https://reimagined-goldfish-v6wrqjwwwvwphpxj9-3000.app.github.dev", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message: "Player: " + action })
