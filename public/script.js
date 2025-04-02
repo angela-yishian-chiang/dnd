@@ -9,6 +9,8 @@ function submitAction() {
   logMessage(`Player: ${action}`);
   input.value = "";
 
+  console.log("Sending action:", action); // ✅ this should show in browser console
+
   fetch("/ask-ai", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,7 +25,7 @@ function submitAction() {
     }
   })
   .catch(err => {
-    console.error(err);
+    console.error("Fetch error:", err);
     logMessage("🛑 AI DM: Network error.");
   });
 }
