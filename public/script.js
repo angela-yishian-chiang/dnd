@@ -1,37 +1,39 @@
 const gameLog = document.getElementById("game-log");
+const input = document.getElementById("player-input");
+const button = document.getElementById("submit-action");
 
-function submitAction() {
-  const input = document.querySelector("#player1 input");
-  const action = input.value.trim();
-  if (!action) return;
+button.addEventListener("click", submitAction);
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") submitAction();
+});
 
-  logMessage("Player: " + action);
+async function submitAction() {
+  const message = input.value.trim();
+  if (!message) return;
+
+  appendMessage("Player", message);
   input.value = "";
 
-  console.log("Sending action:", action);
+  try {
+    const res = await fetch("/ask-ai", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
 
-  fetch("https://reimagined-goldfish-v6wrqjwwwvwphpxj9-3000.app.github.dev", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: "Player: " + action })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.reply) {
-      logMessage("🧠 AI DM: " + data.reply);
-    } else {
-      logMessage("🛑 AI DM: Error getting response.");
-    }
-  })
-  .catch(err => {
+    const data = await res.json();
+    appendMessage("AI DM", data.reply);
+  } catch (err) {
     console.error("Fetch error:", err);
-    logMessage("🛑 AI DM: Network error.");
-  });
+    appendMessage("AI DM", "❌ Network error.");
+  }
 }
 
-function logMessage(msg) {
-  const p = document.createElement("p");
-  p.textContent = msg;
-  gameLog.appendChild(p);
+function appendMessage(sender, text) {
+  const div = document.createElement("div");
+  div.textContent = `${sender}: ${text}`;
+  gameLog.appendChild(div);
   gameLog.scrollTop = gameLog.scrollHeight;
 }
