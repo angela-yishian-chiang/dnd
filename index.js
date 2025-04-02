@@ -17,6 +17,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.get("/ping", (req, res) => {
+  console.log("✅ Received GET /ping");
+  res.send("pong");
+});
+
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.url}`);
   next();
