@@ -51,9 +51,9 @@ app.post("/ask-ai", async (req, res) => {
 
     res.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    console.error("OpenAI error:", error);
+    console.error("OpenAI error:", error.response?.data || error.message || error);
     res.status(500).json({ error: "Failed to get AI response." });
-  }
+  }  
 });
 
 app.listen(PORT, () => {
