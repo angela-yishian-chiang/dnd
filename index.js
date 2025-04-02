@@ -8,6 +8,8 @@ import { fileURLToPath } from "url";
 // Load environment variables
 dotenv.config();
 
+console.log("✅ Loaded API key:", process.env.OPENAI_API_KEY ? "Yes" : "No");
+
 // Required to resolve __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
