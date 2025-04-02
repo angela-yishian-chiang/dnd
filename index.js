@@ -5,11 +5,6 @@ import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
 
-app.use((req, res, next) => {
-  console.log(`➡️ ${req.method} ${req.url}`);
-  next();
-});
-
 // Load environment variables
 dotenv.config();
 
@@ -21,6 +16,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`);
+  next();
+});
 
 // Middleware
 app.use(cors());
