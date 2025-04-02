@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
+console.log("🔑 Loaded OpenRouter key:", process.env.OPENROUTER_API_KEY?.slice(0, 10) + "...");
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
