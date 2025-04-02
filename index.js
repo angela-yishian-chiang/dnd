@@ -5,62 +5,82 @@ import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Env
+// Load environment variables
 dotenv.config();
 
-// Path fixes
+// Handle __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Init app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Health check
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-// Logging all requests
+// Log every request
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.url}`);
   next();
 });
 
 // Middleware
-app.use(cors({
-  origin: "*"
-}));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Init OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Handle AI prompt
 app.post("/ask-ai", async (req, res) => {
   const { message } = req.body;
+
+  if (!message || typeof message !== "string") {
+    return res.status(400).json({ error: "Invalid message format." });
+  }
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: "You are a Dungeon Master guiding the player through an adventure." },
-        { role: "user", content: message }
-      ]
+        {
+          role: "system",
+          content: "You are a Dungeon Master guiding the player through an adventure.",
+        },
+        { role: "user", content: message },
+      ],
     });
 
-    res.json({ reply: completion.choices[0].message.content });
+    const reply = completion?.choices?.[0]?.message?.content?.trim();
+
+    if (reply) {
+      console.log("✅ AI replied:", reply);
+      res.json({ reply });
+    } else {
+      console.warn("⚠️ No reply content found.");
+      res.json({ reply: "⚠️ The Dungeon Master is thinking... but said nothing." });
+    }
   } catch (error) {
     console.error("❌ OpenAI error:");
+
     if (error.response) {
       console.error("Status:", error.response.status);
       console.error("Data:", error.response.data);
     } else {
       console.error("Message:", error.message);
     }
-    res.status(500).json({ error: "Failed to get AI response." });
+
+    res.status(500).json({ reply: "❌ The Dungeon Master encountered a problem." });
   }
 });
 
+// Start server
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🧙‍♂️ Server listening on port ${PORT}`);
 });
