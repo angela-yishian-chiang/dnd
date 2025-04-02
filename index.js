@@ -53,8 +53,14 @@ app.post("/ask-ai", async (req, res) => {
 
     res.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    console.error("OpenAI error:", error.response?.data || error.message || error);
-    res.status(500).json({ error: error.message || "Unknown error" });
+    console.error("❌ OpenAI error:");
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Data:", error.response.data);
+    } else {
+      console.error("Message:", error.message);
+    }
+    res.status(500).json({ error: "Failed to get AI response." });
   }  
 });
 
