@@ -31,3 +31,13 @@ async function submitAction() {
     gameLog.scrollTop = gameLog.scrollHeight;
   }
 }
+
+window.onload = () => {
+  const gameLog = document.getElementById("game-log");
+  setTimeout(() => {
+    gameLog.innerHTML += `<p><strong>AI DM:</strong> 🧙‍♂️ Welcome, traveler. Are you ready to embark on a perilous adventure?</p>`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+  }, 500); // half a second delay
+};
+
+
