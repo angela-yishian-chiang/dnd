@@ -1,12 +1,3 @@
-const gameLog = document.getElementById("game-log");
-const input = document.getElementById("player-input");
-const button = document.getElementById("submit-action");
-
-button.addEventListener("click", submitAction);
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") submitAction();
-});
-
 async function submitAction() {
   const input = document.getElementById("player-input");
   const action = input.value.trim();
@@ -14,29 +5,29 @@ async function submitAction() {
 
   if (!action) return;
 
+  // Add player message
   gameLog.innerHTML += `<p><strong>Player:</strong> ${action}</p>`;
+  gameLog.scrollTop = gameLog.scrollHeight;
   input.value = "";
 
   try {
     const response = await fetch("/ask-ai", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ message: action }),
     });
 
     const data = await response.json();
-    gameLog.innerHTML += `<p><strong>AI DM:</strong> ${data.reply}</p>`;
-  } catch (err) {
-    gameLog.innerHTML += `<p><strong>AI DM:</strong> ⚠️ No response from the Dungeon Master.</p>`;
+    console.log("🟢 Response from server:", data);
+
+    const reply = data.reply || "⚠️ No response from the Dungeon Master.";
+    gameLog.innerHTML += `<p><strong>AI DM:</strong> ${reply}</p>`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+  } catch (error) {
+    console.error("🔴 Fetch error:", error);
+    gameLog.innerHTML += `<p><strong>AI DM:</strong> ⚠️ Network error.</p>`;
+    gameLog.scrollTop = gameLog.scrollHeight;
   }
-
-  // 🌀 Auto-scroll to the bottom of the chat
-  gameLog.scrollTop = gameLog.scrollHeight;
-}
-
-function appendMessage(sender, text) {
-  const div = document.createElement("div");
-  div.textContent = `${sender}: ${text}`;
-  gameLog.appendChild(div);
-  gameLog.scrollTop = gameLog.scrollHeight;
 }
